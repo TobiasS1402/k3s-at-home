@@ -1,0 +1,22 @@
+---
+# We're adding k3s_control_node to each host, this can be done in host_vars/
+# or group_vars/ as well - but for simplicity we are setting it here.
+k3s_cluster:
+  hosts:
+    gaia:
+      ansible_user: root
+      ansible_host: gaia
+      ansible_python_interpreter: /usr/bin/python3
+      k3s_control_node: true
+    atlas:
+      ansible_user: root
+      ansible_host: atlas
+      ansible_python_interpreter: /usr/bin/python3
+    hecate:
+      ansible_user: root
+      ansible_host: hecate
+      ansible_python_interpreter: /usr/bin/python3
+    helios:
+      ansible_user: root
+      ansible_host: helios
+      ansible_python_interpreter: /usr/bin/python3

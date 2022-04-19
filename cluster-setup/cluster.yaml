@@ -1,0 +1,22 @@
+---
+- name: Build a cluster with single control plane
+  hosts: k3s_cluster
+  vars:
+    k3s_etcd_datastore: true
+    k3s_become: true
+    k3s_use_unsupported_config: true
+    k3s_server:
+      k3s_release_version: 1.23
+      cluster-cidr: 10.10.0.0/16,fc00:a0::/64
+      service-cidr: 10.43.0.0/16,fc00:a1::/64
+      write-kubeconfig-mode: '0644'
+      disable-network-policy: true
+      disable:
+        - traefik
+    k3s_server_manifests_urls:
+      - url: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
+        filename: namespace.yaml
+      - url: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+        filename: metallb.yaml
+  roles:
+    - role: xanmanning.k3s
