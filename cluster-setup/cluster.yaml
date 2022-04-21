@@ -8,9 +8,9 @@
     k3s_server:
       k3s_release_version: 1.23
       cluster-cidr: 10.10.0.0/16,fc00:a0::/64
-      service-cidr: 10.43.0.0/16,fc00:a1::/64
       write-kubeconfig-mode: '0644'
       disable-network-policy: true
+      flannel-backend: "none"
       disable:
         - traefik
     k3s_server_manifests_urls:
@@ -18,5 +18,9 @@
         filename: namespace.yaml
       - url: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
         filename: metallb.yaml
+      - url: https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
+    k3s_server_manifests_templates:
+      - "manifests/calico/custom-resources.yaml"
+
   roles:
     - role: xanmanning.k3s
