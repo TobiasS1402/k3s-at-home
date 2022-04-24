@@ -11,7 +11,7 @@ spec:
     containerIPForwarding: Enabled
     ipPools:
     - blockSize: 26
-      cidr: 192.168.0.0/16
+      cidr: 10.32.0.0/16
       encapsulation: VXLANCrossSubnet
       natOutgoing: Enabled
       nodeSelector: all()
@@ -25,4 +25,3 @@ kind: APIServer
 metadata: 
   name: default 
 spec: {}
-
