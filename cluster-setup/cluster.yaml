@@ -21,7 +21,6 @@
         filename: namespace.yaml
       - url: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
         filename: metallb.yaml
-      - url: https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
     k3s_server_manifests_templates:
       - "manifests/calico/custom-resources.yaml"
   roles:
