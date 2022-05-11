@@ -12,12 +12,11 @@
 
 ---
 
-#### Bootstrapping Flux
-```
-flux bootstrap github \
-  --owner=$GITHUB_USER \
-  --repository=k3s-at-home\
-  --branch=main \
-  --path=./cluster \
-  --personal
-```
+## :book:&nbsp; Overview
+
+This repository _is_ my home Kubernetes cluster in a declarative state.
+[Flux](https://github.com/fluxcd/flux2) watches my [cluster](./cluster) directory and makes the changes to my cluster based on the YAML manifests.
+
+This repository is built off the [k8s-at-home/template-cluster-k3s](https://github.com/budimanjojo/home-cluster), which is based on the [k8s-at-home/template-cluster-k3s](https://github.com/k8s-at-home/template-cluster-k3s) repository but reconfigured to not use helm at all.
+
+---
