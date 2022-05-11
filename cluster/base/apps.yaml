@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 10m0s
   dependsOn:
-  - name: core
+  - name: crds
   path: ./cluster/apps
   prune: true
   sourceRef:
