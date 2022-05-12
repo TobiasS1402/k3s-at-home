@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-vars
+  namespace: flux-system
+data:
+  CONFIG_METALLB_RANGE: "192.168.0.201-192.168.0.249"
+  CONFIG_METALLB_DNS: "192.168.0.250"
+  CONFIG_METALLB_INGRESS: "192.168.0.200"
+  CONFIG_TIMEZONE: "Europe/Amsterdam"
