@@ -10,10 +10,19 @@ data:
       protocol: layer2
       addresses:
       - ${CONFIG_METALLB_RANGE}
-    - name: reserved
+    - name: dns
       protocol: layer2
       addresses:
       - ${CONFIG_METALLB_DNS}/32
+      avoid-buggy-ips: true
+      auto-assign: false
+    - name: traefik
+      protocol: layer2
+      addresses:
       - ${CONFIG_METALLB_INGRESS}/32
       avoid-buggy-ips: true
       auto-assign: false
+
+
+
+      
