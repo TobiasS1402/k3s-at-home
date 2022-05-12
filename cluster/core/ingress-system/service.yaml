@@ -56,3 +56,20 @@ spec:
       protocol: TCP
       port: 9100
       targetPort: metrics
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-web-ui
+  namespace: ingress-system
+  labels:
+    app.kubernetes.io/name: traefik
+spec:
+  selector:
+    app.kubernetes.io/name: traefik
+  ports:
+  - name: traefik
+    port: 80
+    targetPort: 8080

@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-web-ui
+  namespace: ingress-system
+spec:
+  rules:
+  - host: traefik.k3s.local
+    http:
+      paths:
+      - path: /dashboard
+        backend:
+          serviceName: traefik-web-ui
+          servicePort: web
