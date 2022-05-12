@@ -90,11 +90,6 @@ spec:
             - name: https
               protocol: TCP
               containerPort: 443
-          volumeMounts:
-            - name: traefik-config
-              mountPath: /etc/traefik
-            - name: traefik-logs
-              mountPath: /tmp
           livenessProbe:
             httpGet:
               path: /ping
@@ -117,9 +112,3 @@ spec:
             - name: TZ
               value: ${CONFIG_TIMEZONE}
       serviceAccountName: traefik
-      volumes:
-        - name: traefik-config
-          configMap:
-            name: traefik-configs
-        - name: traefik-logs
-          emptyDir: {}
