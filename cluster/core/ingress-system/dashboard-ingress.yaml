@@ -10,9 +10,10 @@ spec:
   - host: traefik.k3s.local
     http:
       paths:
-      - path: /dashboard
-        backend:
-          service:
-            name: traefik-web-ui
-            port:
-              number: 80
+        - path: /dashboard
+          pathType: Prefix
+          backend:
+            service:
+              name: traefik-web-ui
+              port:
+                number: 80
