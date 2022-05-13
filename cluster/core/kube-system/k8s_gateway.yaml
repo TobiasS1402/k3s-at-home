@@ -42,10 +42,19 @@ rules:
 - apiGroups:
   - extensions
   - networking.k8s.io
-  - gateway.networking.k8s.io
   resources:
   - ingresses
-  - Gateway
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gatewayclasses
+  - gateways
+  - httproutes
+  - tcproutes
+  - tlsroutes
   verbs:
   - list
   - watch

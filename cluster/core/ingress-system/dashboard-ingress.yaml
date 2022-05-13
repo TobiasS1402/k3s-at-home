@@ -2,6 +2,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: dashboard
+  namespace: ingress-system
 spec:
   entryPoints:
     - web
