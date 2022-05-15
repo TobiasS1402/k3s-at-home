@@ -5,6 +5,10 @@ metadata:
   name: crds
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   interval: 10m0s
   path: ./cluster/crds
   prune: false
