@@ -1,4 +1,4 @@
-##Build the cluster
+## Build the cluster
 Building the cluster uses the Ansible K3S Role by Xanmanning https://github.com/PyratLabs/ansible-role-k3s
 
 ```
@@ -9,7 +9,7 @@ cd k3s-at-home/cluster-setup
 ansible-galaxy install xanmanning.k3s
 ```
 
-###Executing
+### Executing
 ```
 ansible -i inventory.yml -m ping all --ssh-common-args="-o StrictHostKeyChecking=no" --private-key="/home/tobias/.ssh/id_rsa"
 
