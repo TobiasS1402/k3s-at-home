@@ -4,7 +4,7 @@ flux bootstrap github \
   --owner=$GITHUB_USER \
   --repository=k3s-at-home\
   --branch=main \
-  --path=./cluster \
+  --path=./cluster/base \
   --personal
 ```
 
@@ -17,6 +17,11 @@ mv age.agekey ~/.config/sops/age/keys.txt
 
 export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 source ~/.bashrc
+```
+
+#### Import the secret into the actual cluster
+```
+kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey=keys.txt
 ```
 
 #### Create SOPS YAML
