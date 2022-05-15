@@ -21,7 +21,7 @@ source ~/.bashrc
 
 #### Import the secret into the actual cluster
 ```
-kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey=keys.txt
+kubectl create secret generic sops-age --namespace=flux-system --from-file=keys.txt
 ```
 
 #### Create SOPS YAML
