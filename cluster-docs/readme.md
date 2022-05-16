@@ -1,3 +1,45 @@
+#### Creating serviceaccount for remote management
+```
+$ cat admin-sa.yml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k3sadmin
+  namespace: kube-system
+
+$ kubectl apply -f admin-sa.yml
+
+$ cat admin-rbac.yml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k3sadmin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: k3sadmin
+    namespace: kube-system
+
+$ kubectl apply -f admin-rbac.yml
+
+$ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep k3sadmin | awk '{print $1}')
+```
+
+#### Connecting to the cluster
+```
+$ kubectl config set-cluster kubernetes --server=https://192.168.0.110:6443 --insecure-skip-tls-verify=true
+$ kubectl config set-context k3s --cluster=k3s
+$ kubectl config set-credentials k3sadmin --token=<token from setup>
+$ kubectl config set-context k3s --user=k3sadmin
+$ kubectl config use-context k3s
+
+```
+
 #### Bootstrapping Flux
 ```
 flux bootstrap github \
@@ -44,3 +86,4 @@ sops --encrypt --in-place ./cluster/base/cluster-secret-vars.yaml
 ```
 sops --decrypt --in-place .\cluster\base\cluster-secret-vars.yaml
 ```
+

@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
 - kube-system
 - rook-ceph
-- ingress-system

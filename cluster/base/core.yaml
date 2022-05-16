@@ -8,11 +8,11 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
-  interval: 10m0s
+  interval: 1m0s
   dependsOn:
   - name: crds
   path: ./cluster/core
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
