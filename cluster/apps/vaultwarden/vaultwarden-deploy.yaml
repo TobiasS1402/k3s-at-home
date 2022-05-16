@@ -95,7 +95,7 @@ metadata:
   namespace: vaultwarden
 spec:
   rules:
-    - host: ${SECRET_LOCAL_DOMAIN}
+    - host: warden.k3s.seijsener.space
       http:
         paths:
           - path: /
