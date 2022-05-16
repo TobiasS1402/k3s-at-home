@@ -87,3 +87,9 @@ sops --encrypt --in-place ./cluster/base/cluster-secret-vars.yaml
 sops --decrypt --in-place .\cluster\base\cluster-secret-vars.yaml
 ```
 
+### Add secret source
+```
+flux create source git my-secrets --url=https://github.com/TobiasS1402/k3s-at-home --branch=main 
+
+flux create kustomization my-secrets --source=my-secrets --path=./cluster--prune=true --interval=10m --decryption-provider=sops --decryption-secret=sops-age 
+```
