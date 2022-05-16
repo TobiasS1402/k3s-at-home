@@ -83,7 +83,7 @@ metadata:
   namespace: vaultwarden
 spec:
   rules:
-    - host: "warden.${SECRET_EXTERNAL_DOMAIN}"
+    - host: "warden.${SECRET_LOCAL_DOMAIN}"
       http:
         paths:
           - path: /
