@@ -39,3 +39,8 @@ sops --encrypt --in-place .\cluster\base\cluster-secret-vars.yaml
 
 sops --encrypt --in-place ./cluster/base/cluster-secret-vars.yaml
 ```
+
+### Decrypt SOPS secrets like this
+```
+sops --decrypt --in-place .\cluster\base\cluster-secret-vars.yaml
+```

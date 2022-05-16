@@ -1,0 +1,114 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: vaultwarden
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: vaultwarden
+    name: vaultwarden-deployment
+    namespace: vaultwarden
+spec:
+    replicas: 1
+    serviceName: "vaultwarden-service"
+    selector:
+        matchLabels:
+            app: vaultwarden
+    template:
+        metadata:
+            labels:
+                app: vaultwarden
+        spec:
+            containers:
+            - image: vaultwarden/server:1.24.0
+              imagePullPolicy: IfNotPresent
+              name: vaultwarden
+              volumeMounts:
+                - name: vaultwarden-volume
+                  mountPath: /data
+              ports:
+                - containerPort: 80
+                - containerPort: 3012
+              env:
+                - name: ADMIN_TOKEN
+                  value: ${SECRET_VAULTWARDEN_ADMIN_TOKEN}
+                - name: SIGNUPS_ALLOWED
+                  value: "True"
+                - name: WEBSOCKET_ENABLED
+                  value: "True"
+                - name: SMTP_FROM
+                  value: "warden@${SECRET_EXTERNAL_DOMAIN}"
+                - name: SMTP_HOST
+                  value: "doos.ayent.nl"
+                - name: SMTP_PORT
+                  value: "587"
+                - name: SMTP_SSL
+                  value: "True"
+                - name: SMTP_USERNAME
+                  value: "warden@${SECRET_EXTERNAL_DOMAIN}"
+                - name: SMTP_PASSWORD
+                  value: ${SECRET_VAULTWARDEN_SMTP_PASSWORD}
+            volumes:
+              - name: vaultwarden-volume
+                persistentVolumeClaim:
+                  claimName: vaultwarden-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultwarden-data
+  namespace: vaultwarden
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden-service
+  namespace: vaultwarden
+spec:
+  ports:
+    -
+      port: 8888
+      name: http
+      protocol: TCP
+      targetPort: 80
+    -
+      port: 9999
+      name: websocket
+      protocol: UDP
+      targetPort: 3012
+  selector:
+    app: vaultwarden
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vaultwarden-ingress
+  namespace: vaultwarden
+spec:
+  rules:
+    - host: vaultwarden.${SECRET_LOCAL_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vaultwarden-service
+                port:
+                  number: 8888
+          - path: /notifications/hub
+            pathType: Prefix
+            backend:
+              service:
+                name: vaultwarden-service
+                port:
+                  number: 9999
