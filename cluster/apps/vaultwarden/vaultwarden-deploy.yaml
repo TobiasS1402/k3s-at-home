@@ -35,9 +35,9 @@ spec:
                 - name: ADMIN_TOKEN
                   value: ${SECRET_VAULTWARDEN_ADMIN_TOKEN}
                 - name: SIGNUPS_ALLOWED
-                  value: True
+                  value: "True"
                 - name: WEBSOCKET_ENABLED
-                  value: True
+                  value: "True"
                 - name: SMTP_FROM
                   value: "warden@${SECRET_EXTERNAL_DOMAIN}"
                 - name: SMTP_HOST
@@ -45,7 +45,7 @@ spec:
                 - name: SMTP_PORT
                   value: "587"
                 - name: SMTP_SSL
-                  value: True
+                  value: "True"
                 - name: SMTP_USERNAME
                   value: "warden@${SECRET_EXTERNAL_DOMAIN}"
                 - name: SMTP_PASSWORD
