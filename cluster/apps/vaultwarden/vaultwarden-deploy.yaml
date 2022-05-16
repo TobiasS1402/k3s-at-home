@@ -95,7 +95,7 @@ metadata:
   namespace: vaultwarden
 spec:
   rules:
-    - host: &host "vaultwarden.${SECRET_LOCAL_DOMAIN}"
+    - host: &host "${SECRET_LOCAL_DOMAIN}"
       http:
         paths:
           - path: /
