@@ -13,6 +13,7 @@ apiVersion: notification.toolkit.fluxcd.io/v1beta1
 kind: Alert
 metadata:
   name: alerts
+  namespace: flux-system
 spec:
   providerRef: 
     name: telegram
