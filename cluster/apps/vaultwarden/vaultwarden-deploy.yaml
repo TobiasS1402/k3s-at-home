@@ -33,23 +33,11 @@ spec:
                 - containerPort: 3012
               env:
                 - name: ADMIN_TOKEN
-                  value: ${SECRET_VAULTWARDEN_ADMIN_TOKEN}
+                  value: "${SECRET_VAULTWARDEN_ADMIN_TOKEN}"
                 - name: SIGNUPS_ALLOWED
-                  value: "True"
+                  value: "False"
                 - name: WEBSOCKET_ENABLED
                   value: "True"
-                - name: SMTP_FROM
-                  value: "warden@${SECRET_EXTERNAL_DOMAIN}"
-                - name: SMTP_HOST
-                  value: "doos.ayent.nl"
-                - name: SMTP_PORT
-                  value: "587"
-                - name: SMTP_SSL
-                  value: "True"
-                - name: SMTP_USERNAME
-                  value: "warden@${SECRET_EXTERNAL_DOMAIN}"
-                - name: SMTP_PASSWORD
-                  value: ${SECRET_VAULTWARDEN_SMTP_PASSWORD}
             volumes:
               - name: vaultwarden-volume
                 persistentVolumeClaim:
