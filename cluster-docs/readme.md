@@ -41,13 +41,8 @@ $ kubectl config use-context k3s
 ```
 
 #### Bootstrapping Flux
-```
-flux bootstrap github \
-  --owner=$GITHUB_USER \
-  --repository=k3s-at-home\
-  --branch=main \
-  --path=./cluster/base \
-  --personal
+```sh
+flux bootstrap github --owner=TobiasS1402 --repository=k3s-at-home --branch=main --path=./cluster/base --personal
 ```
 
 #### Setting up age secrets
