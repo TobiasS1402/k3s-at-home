@@ -81,6 +81,8 @@ kind: Ingress
 metadata:
   name: vaultwarden-ingress
   namespace: vaultwarden
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
     - host: "warden.${SECRET_LOCAL_DOMAIN}"

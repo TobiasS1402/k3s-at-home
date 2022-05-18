@@ -38,7 +38,7 @@ spec:
         enabled: true
     ingress:
       create: true
-      class: traefik
+      class: nginx
       host: &host "k10.${SECRET_LOCAL_DOMAIN}"
       urlPath: k10
       hosts:
