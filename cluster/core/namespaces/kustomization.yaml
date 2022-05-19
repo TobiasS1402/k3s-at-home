@@ -4,3 +4,5 @@ resources:
 - kasten-io.yaml
 - ingress-system.yaml
 - media.yaml
+- vaultwarden.yaml
+- monitoring.yaml
