@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: radarr
+    name: radarr-deployment
+    namespace: media
+spec:
+    replicas: 1
+    serviceName: "radarr-service"
+    selector:
+        matchLabels:
+            app: radarr
+    template:
+        metadata:
+            labels:
+                app: radarr
+        spec:
+            containers:
+            - image: linuxserver/radarr:amd64-4.1.0
+              imagePullPolicy: IfNotPresent
+              name: radarr
+              volumeMounts:
+                - name: radarr-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 7878
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "${CONFIG_TIMEZONE}"
+            volumes:
+              - name: radarr-volume
+                persistentVolumeClaim:
+                  claimName: radarr-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr-data
+  namespace: media
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radarr-service
+  namespace: media
+spec:
+  ports:
+    -
+      port: 7878
+      name: http
+      protocol: TCP
+      targetPort: 7878
+  selector:
+    app: radarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radarr-ingress
+  namespace: media
+spec:
+  rules:
+    - host: "radarr.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: radarr-service
+                port:
+                  number: 7878

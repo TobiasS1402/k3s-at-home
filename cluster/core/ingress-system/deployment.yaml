@@ -34,7 +34,7 @@ spec:
         external-status-address: 
         - ${CONFIG_METALLB_INGRESS}
       metrics:
-        enabled: false
+        enabled: true
         serviceMonitor:
           enabled: false
           namespace: ingress-system

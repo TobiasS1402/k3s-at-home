@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: sonarr
+    name: sonarr-deployment
+    namespace: media
+spec:
+    replicas: 1
+    serviceName: "sonarr-service"
+    selector:
+        matchLabels:
+            app: sonarr
+    template:
+        metadata:
+            labels:
+                app: sonarr
+        spec:
+            containers:
+            - image: linuxserver/sonarr:amd64-3.0.8
+              imagePullPolicy: IfNotPresent
+              name: sonarr
+              volumeMounts:
+                - name: sonarr-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 8989
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "${CONFIG_TIMEZONE}"
+            volumes:
+              - name: sonarr-volume
+                persistentVolumeClaim:
+                  claimName: sonarr-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-data
+  namespace: media
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sonarr-service
+  namespace: media
+spec:
+  ports:
+    -
+      port: 8989
+      name: http
+      protocol: TCP
+      targetPort: 8989
+  selector:
+    app: sonarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr-ingress
+  namespace: media
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "sonarr.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarr-service
+                port:
+                  number: 8989
