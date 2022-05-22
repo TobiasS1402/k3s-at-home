@@ -42,6 +42,8 @@ spec:
                   value: "${SECRET_BOOKSTACK_DB_PASS}"
                 - name: DB_DATABASE
                   value: "bookstackapp"
+                - name: APP_DEBUG
+                  value: "true"
             volumes:
               - name: bookstack-volume
                 persistentVolumeClaim:
