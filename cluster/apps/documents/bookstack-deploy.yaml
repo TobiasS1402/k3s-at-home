@@ -33,7 +33,7 @@ spec:
                 - name: TZ
                   value: "Europe/Amsterdam"
                 - name: APP_URL
-                  value: "bookstack.${SECRET_LOCAL_DOMAIN}"
+                  value: "http://bookstack.${SECRET_LOCAL_DOMAIN}"
                 - name: DB_HOST
                   value: "bookstack-db-service"
                 - name: DB_USER
