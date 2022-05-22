@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: paperless
+    name: paperless-deployment
+    namespace: documents
+spec:
+    replicas: 1
+    serviceName: "paperless-service"
+    selector:
+        matchLabels:
+            app: paperless
+    template:
+        metadata:
+            labels:
+                app: paperless
+        spec:
+            containers:
+            - image: redis:7.0.0
+              imagePullPolicy: IfNotPresent
+              name: paperless-redis
+              ports:
+                - name: redis
+                  containerPort: 6379
+              livenessProbe:
+               tcpSocket:
+                port: redis
+            - image: ghcr.io/paperless-ngx/paperless-ngx:1.7.1
+              imagePullPolicy: IfNotPresent
+              name: paperless
+              volumeMounts:
+                - name: paperless-volume
+                  mountPath: /usr/src/paperless/data
+                - name: paperless-volume
+                  mountPath: /usr/src/paperless/media
+                - name: paperless-volume
+                  mountPath: /usr/src/paperless/export
+                - name: paperless-volume
+                  mountPath: /usr/src/paperless/consume
+              ports:
+                - containerPort: 8000
+              env:
+                - name: USERMAP_UID
+                  value: "1000"
+                - name: USERMAP_GID 
+                  value: "1000"
+                - name: PAPERLESS_TIME_ZONE
+                  value: "${CONFIG_TIMEZONE}"
+                - name: PAPERLESS_OCR_LANGUAGES
+                  value: "nld eng"
+                - name: PAPERLESS_OCR_LANGUAGE
+                  value: "nld"
+                - name: PAPERLESS_SECRET_KEY
+                  value: "${SECRET_PAPERLESS_SECRET_KEY}"
+                - name: PAPERLESS_REDIS
+                  value: "redis://paperless-redis:6379"
+            volumes:
+              - name: paperless-volume
+                persistentVolumeClaim:
+                  claimName: paperless-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-service
+  namespace: documents
+spec:
+  ports:
+    -
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: paperless
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-db-service
+  namespace: documents
+spec:
+  ports:
+    -
+      port: 3306
+  selector:
+    app: paperless-db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-data
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paperless-ingress
+  namespace: documents
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "paperless.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: paperless-service
+                port:
+                  number: 8000

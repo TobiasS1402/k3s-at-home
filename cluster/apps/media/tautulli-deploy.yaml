@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: tautulli
+    name: tautulli-deployment
+    namespace: media
+spec:
+    replicas: 1
+    serviceName: "tautulli-service"
+    selector:
+        matchLabels:
+            app: tautulli
+    template:
+        metadata:
+            labels:
+                app: tautulli
+        spec:
+            containers:
+            - image: tautulli/tautulli:v2.9.7
+              imagePullPolicy: IfNotPresent
+              name: tautulli
+              volumeMounts:
+                - name: tautulli-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 8181
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "${CONFIG_TIMEZONE}"
+            volumes:
+              - name: tautulli-volume
+                persistentVolumeClaim:
+                  claimName: tautulli-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tautulli-data
+  namespace: media
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tautulli-service
+  namespace: media
+spec:
+  ports:
+    -
+      port: 8181
+      protocol: TCP
+      targetPort: 8181
+  selector:
+    app: tautulli
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tautulli-ingress
+  namespace: media
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: "tautulli.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tautulli-service
+                port:
+                  number: 8181

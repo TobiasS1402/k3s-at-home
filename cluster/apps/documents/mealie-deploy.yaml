@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: mealie
+    name: mealie-deployment
+    namespace: documents
+spec:
+    replicas: 1
+    serviceName: "mealie-service"
+    selector:
+        matchLabels:
+            app: mealie
+    template:
+        metadata:
+            labels:
+                app: mealie
+        spec:
+            containers:
+            - image: hkotel/mealie:v0.5.6
+              imagePullPolicy: IfNotPresent
+              name: mealie
+              volumeMounts:
+                - name: mealie-volume
+                  mountPath: /app/data
+              ports:
+                - containerPort: 9925
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "${CONFIG_TIMEZONE}"
+                - name: RECIPE_PUBLIC
+                  value: "True"
+                - name: RECIPE_SHOW_NUTRITION
+                  value: "True"
+                - name: RECIPE_SHOW_ASSETS
+                  value: "True"
+                - name: RECIPE_LANDSCAPE_VIEW
+                  value: "True"
+                - name: RECIPE_DISABLE_COMMENTS
+                  value: "True"
+                - name: RECIPE_DISABLE_AMOUNT
+                  value: "False"
+                - name: DEFAULT_EMAIL
+                  value: "tobias+mealie@${SECRET_EXTERNAL_DOMAIN2}"
+                - name: BASE_URL
+                  value: "mealie.${SECRET_LOCAL_DOMAIN}"
+            volumes:
+              - name: mealie-data
+                persistentVolumeClaim:
+                  claimName: mealie-volume
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mealie-data
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mealie-service
+  namespace: documents
+spec:
+  ports:
+    -
+      port: 9925
+      protocol: TCP
+      targetPort: 9925
+  selector:
+    app: mealie
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mealie-ingress
+  namespace: documents
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "mealie.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mealie-service
+                port:
+                  number: 9925

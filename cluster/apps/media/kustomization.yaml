@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
 - sonarr-deploy.yaml
 - radarr-deploy.yaml
+- prowlarr-deploy.yaml
+- tautulli-deploy.yaml

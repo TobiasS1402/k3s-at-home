@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: prowlarr
+    name: prowlarr-deployment
+    namespace: media
+spec:
+    replicas: 1
+    serviceName: "prowlarr-service"
+    selector:
+        matchLabels:
+            app: prowlarr
+    template:
+        metadata:
+            labels:
+                app: prowlarr
+        spec:
+            containers:
+            - image: linuxserver/prowlarr:amd64-0.4.0-nightly
+              imagePullPolicy: IfNotPresent
+              name: prowlarr
+              volumeMounts:
+                - name: prowlarr-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 9696
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "${CONFIG_TIMEZONE}"
+            volumes:
+              - name: prowlarr-volume
+                persistentVolumeClaim:
+                  claimName: prowlarr-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prowlarr-data
+  namespace: media
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr-service
+  namespace: media
+spec:
+  ports:
+    -
+      port: 9696
+      protocol: TCP
+      targetPort: 9696
+  selector:
+    app: prowlarr
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prowlarr-ingress
+  namespace: media
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "prowlarr.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prowlarr-service
+                port:
+                  number: 9696

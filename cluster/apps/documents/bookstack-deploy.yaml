@@ -1,0 +1,155 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: bookstack
+    name: bookstack-deployment
+    namespace: documents
+spec:
+    replicas: 1
+    serviceName: "bookstack-service"
+    selector:
+        matchLabels:
+            app: bookstack
+    template:
+        metadata:
+            labels:
+                app: bookstack
+        spec:
+            containers:
+            - image: linuxserver/bookstack:amd64-22.04.2
+              imagePullPolicy: IfNotPresent
+              name: bookstack
+              volumeMounts:
+                - name: bookstack-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 6875
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "Europe/Amsterdam"
+                - name: APP_URL
+                  value: "bookstack.${SECRET_LOCAL_DOMAIN}"
+                - name: DB_HOST
+                  value: "bookstack-db-service"
+                - name: DB_USER
+                  value: "bookstack"
+                - name: DB_PASS
+                  value: "${SECRET_BOOKSTACK_DB_PASS}"
+                - name: DB_DATABASE
+                  value: "bookstackapp"
+            volumes:
+              - name: bookstack-volume
+                persistentVolumeClaim:
+                  claimName: bookstack-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstack-service
+  namespace: documents
+spec:
+  ports:
+    -
+      port: 6875
+      name: http
+      protocol: TCP
+      targetPort: 6875
+  selector:
+    app: bookstack
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: bookstack-db
+    name: bookstack-db-deployment
+    namespace: documents
+spec:
+    replicas: 1
+    serviceName: "bookstack-db-service"
+    selector:
+        matchLabels:
+            app: bookstack-db
+    template:
+        metadata:
+            labels:
+                app: bookstack-db
+        spec:
+            containers:
+            - image: linuxserver/mariadb:amd64-10.5.15
+              imagePullPolicy: IfNotPresent
+              name: bookstack-db
+              volumeMounts:
+                - name: bookstack-volume
+                  mountPath: /config
+              ports:
+                - containerPort: 3306
+              env:
+                - name: PUID
+                  value: "1000"
+                - name: PGID 
+                  value: "1000"
+                - name: TZ
+                  value: "Europe/Amsterdam"
+                - name: MYSQL_ROOT_PASSWORD
+                  value: "${SECRET_BOOKSTACK_DB_PASS}"
+                - name: MYSQL_DATABASE
+                  value: "bookstackapp"
+                - name: MYSQL_USER
+                  value: "bookstack"
+                - name: MYSQL_PASSWORD
+                  value: "${SECRET_BOOKSTACK_DB_PASS}"
+            volumes:
+              - name: bookstack-volume
+                persistentVolumeClaim:
+                  claimName: bookstack-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstack-db-service
+  namespace: documents
+spec:
+  ports:
+    -
+      port: 3306
+  selector:
+    app: bookstack-db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstack-data
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookstack-ingress
+  namespace: documents
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "bookstack.${SECRET_LOCAL_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bookstack-service
+                port:
+                  number: 6875
