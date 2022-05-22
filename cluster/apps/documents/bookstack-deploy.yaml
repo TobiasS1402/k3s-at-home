@@ -48,6 +48,19 @@ spec:
                   claimName: bookstack-data
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstack-data
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: bookstack-service
@@ -85,7 +98,7 @@ spec:
               imagePullPolicy: IfNotPresent
               name: bookstack-db
               volumeMounts:
-                - name: bookstack-volume
+                - name: bookstack-db-volume
                   mountPath: /config
               ports:
                 - containerPort: 3306
@@ -105,9 +118,9 @@ spec:
                 - name: MYSQL_PASSWORD
                   value: "${SECRET_BOOKSTACK_DB_PASS}"
             volumes:
-              - name: bookstack-volume
+              - name: bookstack-db-volume
                 persistentVolumeClaim:
-                  claimName: bookstack-data
+                  claimName: bookstack-db-data
 ---
 apiVersion: v1
 kind: Service
@@ -124,15 +137,15 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: bookstack-data
+  name: bookstack-db-data
   namespace: documents
 spec:
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   storageClassName: rook-ceph-block
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

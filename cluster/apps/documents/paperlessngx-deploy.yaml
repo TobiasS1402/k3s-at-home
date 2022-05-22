@@ -30,13 +30,13 @@ spec:
               imagePullPolicy: IfNotPresent
               name: paperless
               volumeMounts:
-                - name: paperless-volume
+                - name: paperless-data-volume
                   mountPath: /usr/src/paperless/data
-                - name: paperless-volume
+                - name: paperless-media-volume
                   mountPath: /usr/src/paperless/media
-                - name: paperless-volume
+                - name: paperless-export-volume
                   mountPath: /usr/src/paperless/export
-                - name: paperless-volume
+                - name: paperless-consume-volume
                   mountPath: /usr/src/paperless/consume
               ports:
                 - containerPort: 8000
@@ -89,15 +89,54 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-data
+  name: paperless-media-volume
   namespace: documents
 spec:
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   storageClassName: rook-ceph-block
   resources:
     requests:
-      storage: 10Gi
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-export-volume
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-data-volume
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-consume-volume
+  namespace: documents
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: rook-ceph-block
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
