@@ -6,3 +6,4 @@ resources:
   - https://raw.githubusercontent.com/rook/rook/v1.9.2/deploy/examples/cluster.yaml
   - snapshotclass.yaml
   - storageclass.yaml
+  - ingress.yaml
