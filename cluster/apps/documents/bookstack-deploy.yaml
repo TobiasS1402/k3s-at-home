@@ -20,16 +20,16 @@ spec:
             - image: linuxserver/bookstack:amd64-22.04.2
               imagePullPolicy: IfNotPresent
               name: bookstack
+              securityContext:
+                capabilities:
+                  drop:
+                  - CAP_NET_RAW
               volumeMounts:
                 - name: bookstack-volume
                   mountPath: /config
               ports:
-                - containerPort: 6875
+                - containerPort: 80
               env:
-                - name: PUID
-                  value: "1000"
-                - name: PGID 
-                  value: "1000"
                 - name: TZ
                   value: "Europe/Amsterdam"
                 - name: APP_URL
@@ -73,7 +73,7 @@ spec:
       port: 6875
       name: http
       protocol: TCP
-      targetPort: 6875
+      targetPort: 80
   selector:
     app: bookstack
 ---
