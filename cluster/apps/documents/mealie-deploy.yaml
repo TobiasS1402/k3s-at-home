@@ -24,7 +24,7 @@ spec:
                 - name: mealie-volume
                   mountPath: /app/data
               ports:
-                - containerPort: 80
+                - containerPort: 9000
               env:
                 - name: PUID
                   value: "1000"
@@ -74,9 +74,9 @@ metadata:
 spec:
   ports:
     -
-      port: 9925
+      port: 9000
       protocol: TCP
-      targetPort: 80
+      targetPort: 9000
   selector:
     app: mealie
 ---
@@ -98,4 +98,4 @@ spec:
               service:
                 name: mealie-service
                 port:
-                  number: 9925
+                  number: 9000

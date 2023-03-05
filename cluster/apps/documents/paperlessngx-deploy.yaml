@@ -17,15 +17,6 @@ spec:
                 app: paperless
         spec:
             containers:
-            - image: redis:7.0.0
-              imagePullPolicy: IfNotPresent
-              name: paperless-redis
-              ports:
-                - name: redis
-                  containerPort: 6379
-              livenessProbe:
-               tcpSocket:
-                port: redis
             - image: ghcr.io/paperless-ngx/paperless-ngx:1.13
               imagePullPolicy: IfNotPresent
               name: paperless
@@ -68,6 +59,35 @@ spec:
               - name: paperless-consume-volume
                 persistentVolumeClaim:
                   claimName: paperless-consume-data
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    labels:
+        app: paperless
+    name: paperless-redis-deployment
+    namespace: documents
+spec:
+    replicas: 1
+    serviceName: "paperless-redis-service"
+    selector:
+        matchLabels:
+            app: paperless
+    template:
+        metadata:
+            labels:
+                app: paperless
+        spec:
+            containers:
+            - image: redis:7.0.0
+              imagePullPolicy: IfNotPresent
+              name: paperless-redis
+              ports:
+                - name: redis
+                  containerPort: 6379
+              livenessProbe:
+               tcpSocket:
+                port: redis
 ---
 apiVersion: v1
 kind: Service
