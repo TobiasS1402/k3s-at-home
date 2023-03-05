@@ -24,7 +24,7 @@ spec:
                 - name: mealie-volume
                   mountPath: /app/data
               ports:
-                - containerPort: 9925
+                - containerPort: 80
               env:
                 - name: PUID
                   value: "1000"
@@ -49,9 +49,9 @@ spec:
                 - name: BASE_URL
                   value: "mealie.${SECRET_LOCAL_DOMAIN}"
             volumes:
-              - name: mealie-data
+              - name: mealie-volume
                 persistentVolumeClaim:
-                  claimName: mealie-volume
+                  claimName: mealie-data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -76,7 +76,7 @@ spec:
     -
       port: 9925
       protocol: TCP
-      targetPort: 9925
+      targetPort: 80
   selector:
     app: mealie
 ---

@@ -56,9 +56,18 @@ spec:
                 - name: PAPERLESS_REDIS
                   value: "redis://paperless-redis:6379"
             volumes:
-              - name: paperless-volume
+              - name: paperless-data-volume
                 persistentVolumeClaim:
-                  claimName: paperless-data
+                  claimName: paperless-data-data
+              - name: paperless-media-volume
+                persistentVolumeClaim:
+                  claimName: paperless-media-data
+              - name: paperless-export-volume
+                persistentVolumeClaim:
+                  claimName: paperless-export-data
+              - name: paperless-consume-volume
+                persistentVolumeClaim:
+                  claimName: paperless-consume-data
 ---
 apiVersion: v1
 kind: Service
@@ -89,7 +98,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-media-volume
+  name: paperless-media-data
   namespace: documents
 spec:
   accessModes:
@@ -102,7 +111,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-export-volume
+  name: paperless-export-data
   namespace: documents
 spec:
   accessModes:
@@ -115,7 +124,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-data-volume
+  name: paperless-data-data
   namespace: documents
 spec:
   accessModes:
@@ -128,7 +137,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: paperless-consume-volume
+  name: paperless-consume-data
   namespace: documents
 spec:
   accessModes:
