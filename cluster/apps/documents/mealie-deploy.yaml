@@ -17,7 +17,7 @@ spec:
                 app: mealie
         spec:
             containers:
-            - image: hkotel/mealie:v0.5.6
+            - image: hkotel/mealie:omni-nightly
               imagePullPolicy: IfNotPresent
               name: mealie
               volumeMounts:
