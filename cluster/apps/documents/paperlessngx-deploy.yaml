@@ -93,7 +93,7 @@ spec:
     -
       port: 6379
   selector:
-    app: paperless-db
+    app: paperless-redis
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
